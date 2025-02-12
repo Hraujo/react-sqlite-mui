@@ -1,0 +1,11 @@
+{
+    "sqltools.connections": [
+        {
+            "previewLimit": 50,
+            "driver": "SQLite",
+            "name": "Sqlite-1",
+            "group": "SqliteGroup",
+            "database": "D:\\Docs\\Dev\\Codes\\JS\\React\\Sqlite\\react-sqlite-mui\\hsoft.db"
+        }
+    ]
+}

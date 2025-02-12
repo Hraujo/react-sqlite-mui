@@ -1,22 +1,29 @@
 // App.tsx
 import React, { useState, useEffect } from 'react';
-import {  Dialog, DialogTitle, DialogContent, DialogActions, TextField, Select, MenuItem, InputLabel, FormControl, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Tabs, Tab, CardContent, Card, CardHeader, CardActions, Box, AppBar,   Chip } from '@mui/material';
-import { Edit, Delete, Add, Save, Cancel } from '@mui/icons-material';
-import { CustomButton } from './components/custom/CustomButton';
-import { CustomCenterDiv } from './components/custom/CustomCenterDiv';
+import {  Dialog, DialogTitle, DialogContent, DialogActions, TextField, Select, MenuItem, InputLabel, FormControl, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Tabs, Tab, CardContent, Card, CardHeader, CardActions, Box, AppBar, IconButton, Chip, InputAdornment, OutlinedInput, Tooltip } from '@mui/material';
+import { Edit, Delete, Add, Save, Cancel, Visibility, VisibilityOff } from '@mui/icons-material';
+import { CustomButton } from '../components/custom/CustomButton';
+import { CustomCenterDiv } from '../components/custom/CustomCenterDiv';
+import { User, Department } from '../types';
 
-import { User, Department } from './types';
 
 type Entity = User | Department;
 type EntityType = 'user' | 'department';
 
-const App = () => {
+interface DataTableProps {
+  entity: string;
+}
+
+export const DataTable: React.FC<DataTableProps> = ({ entity }) => {
   const [entities, setEntities] = useState<(User | Department)[]>([]);
   const [departments, setDepartments] = useState<Department[]>([]);
+  const [users, setUsers] = useState<User[]>([]);
   const [openDialog, setOpenDialog] = useState(false);
   const [currentEntity, setCurrentEntity] = useState<Entity | null>(null);
   const [entityType, setEntityType] = useState<EntityType>('user');
   const [tabValue, setTabValue] = useState(0);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showTablePasswords, setShowTablePasswords] = useState<{[key: number]: boolean}>({});
 
   useEffect(() => {
     fetchData();
@@ -26,14 +33,17 @@ const App = () => {
     const type = tabValue === 0 ? 'users' : 'departments';
     const response = await fetch(`http://localhost:3001/${type}`);
     const data = await response.json();
-    
-    if (tabValue === 0) {
-      setEntities(data);
-      const deptResponse = await fetch('http://localhost:3001/departments');
-      setDepartments(await deptResponse.json());
-    } else {
-      setEntities(data);
-    }
+    setEntities(data);
+
+    // Always fetch departments for reference
+    const deptResponse = await fetch('http://localhost:3001/departments');
+    const deptData = await deptResponse.json();
+    setDepartments(deptData);
+
+    // Always fetch users for reference
+    const usersResponse = await fetch('http://localhost:3001/users');
+    const usersData = await usersResponse.json();
+    setUsers(usersData);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -57,9 +67,37 @@ const App = () => {
     fetchData();
   };
 
+  const handleAddNew = () => {
+    if (tabValue === 0) {
+      setCurrentEntity({
+        name: '',
+        email: '',
+        department_id: departments[0]?.id,
+        password: ''
+      } as User);
+    } else {
+      setCurrentEntity({
+        name: '',
+        manager_id: 0
+      } as Department);
+    }
+    setOpenDialog(true);
+  };
+
+
+  const handleClickShowPassword = () => setShowPassword((show) => !show);
+
+  const handleMouseDownPassword = (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.preventDefault();
+  };
+
+  const handleMouseUpPassword = (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.preventDefault();
+  };
+
+
   return (
     <CustomCenterDiv>
-  
 
      <Card>
       <CardHeader className='bg-gray' title={tabValue === 0 ? 'Users' : 'Departments'} />
@@ -81,7 +119,6 @@ const App = () => {
      </Card>
      <Card>
       <CardContent>
-        
 
       <TableContainer component={Paper} sx={{ mt: 2 }}>
       <Table sx={{ minWidth: 650 }} size="small" aria-label="a dense table">
@@ -92,9 +129,14 @@ const App = () => {
                   <TableCell>Name</TableCell>
                   <TableCell>Email</TableCell>
                   <TableCell>Department</TableCell>
+                  <TableCell>Password</TableCell>
+
                 </>
               ) : (
+                <>
                 <TableCell>Department Name</TableCell>
+                <TableCell>Manager</TableCell>
+                </>
               )}
               <TableCell sx={{textAlign: 'center'}}>Actions</TableCell>
             </TableRow>
@@ -106,32 +148,57 @@ const App = () => {
                   <>
                     <TableCell>{(entity as User).name}</TableCell>
                     <TableCell>{(entity as User).email}</TableCell>
+
                     <TableCell>
                       {departments.find(d => d.id === (entity as User).department_id)?.name}
                     </TableCell>
+                    <TableCell>
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                        {showTablePasswords[entity.id!] ? (entity as User).password : '••••••••'}
+                        <IconButton
+                          size="small"
+                          onClick={() => setShowTablePasswords(prev => ({
+                            ...prev,
+                            [entity.id!]: !prev[entity.id!]
+                          }))}
+                        >
+                          {showTablePasswords[entity.id!] ? <VisibilityOff /> : <Visibility />}
+                        </IconButton>
+                      </Box>
+                    </TableCell>
+
                   </>
                 ) : (
+                  <>
                   <TableCell>{(entity as Department).name}</TableCell>
+                <TableCell>{users.find(d => d.id === (entity as Department).manager_id)?.name || 'N/A'}</TableCell>
+
+                  </>
+
                 )}
                 <TableCell sx={{textAlign: 'center'}}>
-                  <CustomButton
-                    startIcon={<Edit />}
+                  <Tooltip title="Edit" >
+                  <IconButton
                     color="info"
+                    size="small"
                     onClick={() => {
                       setCurrentEntity(entity);
                       setEntityType(tabValue === 0 ? 'user' : 'department');
                       setOpenDialog(true);
                     }}
                   >
-                    Edit
-                  </CustomButton>
-                  <CustomButton
-                    startIcon={<Delete />}
+                    <Edit />
+                  </IconButton>
+                  </Tooltip>
+                  <Tooltip title="Delete" >
+                  <IconButton
                     onClick={() => handleDelete(entity.id!)}
                     color="error"
+                    size="small"
                   >
-                    Delete
-                  </CustomButton>
+                        <Delete />
+                  </IconButton>
+                  </Tooltip>
                 </TableCell>
               </TableRow>
             ))}
@@ -143,11 +210,7 @@ const App = () => {
       <CustomButton 
         variant="contained" 
         startIcon={<Add />} 
-        onClick={() => {
-          setCurrentEntity(null);
-          setEntityType(tabValue === 0 ? 'user' : 'department');
-          setOpenDialog(true);
-        }}
+        onClick={handleAddNew}
       >
         Add {tabValue === 0 ? 'User' : 'Department'}
       </CustomButton>
@@ -155,14 +218,15 @@ const App = () => {
      </Card>
 
 
-      <Dialog open={openDialog} onClose={() => setOpenDialog(false)}>
+      <Dialog open={openDialog} onClose={() => setOpenDialog(false)} sx={{ width: '100%'}}>
+          <form onSubmit={handleSubmit} noValidate>
         <DialogTitle className='bg-gray'>
           {currentEntity?.id ? 'Edit'  : 'Add'} {<Chip style={{textTransform: 'uppercase'}} color="primary" size="small" label={entityType}></Chip>}
         </DialogTitle>
         <DialogContent>
-          <form onSubmit={handleSubmit}>
             {entityType === 'user' ? (
               <>
+              <FormControl sx={{ m: 1,  }} variant="outlined" fullWidth margin="dense">
                 <TextField
                   autoFocus
                   margin="dense"
@@ -175,6 +239,9 @@ const App = () => {
                     department_id: (currentEntity as User)?.department_id || departments[0]?.id
                   } as User)}
                 />
+                </FormControl>
+
+                <FormControl sx={{ m: 1,  }} variant="outlined" fullWidth margin="dense">
                 <TextField
                   margin="dense"
                   label="Email"
@@ -186,10 +253,44 @@ const App = () => {
                     email: e.target.value
                   } as User)}
                 />
-                <FormControl >
-                  <InputLabel shrink color="primary">DEPT</InputLabel>
+</FormControl>
+
+        <FormControl sx={{ m: 1,  }} variant="outlined" fullWidth margin="dense">
+          <InputLabel htmlFor="outlined-adornment-password">Password</InputLabel>
+          <OutlinedInput
+          fullWidth
+          value={(currentEntity as User)?.password || ''}
+          onChange={(e) => setCurrentEntity({
+            ...currentEntity,
+            password: e.target.value
+          } as User)}
+            id="outlined-adornment-password"
+            type={showPassword ? 'text' : 'password'}
+            endAdornment={
+              <InputAdornment position="end">
+                <IconButton
+                  aria-label={
+                    showPassword ? 'hide the password' : 'display the password'
+                  }
+                  onClick={handleClickShowPassword}
+                  onMouseDown={handleMouseDownPassword}
+                  onMouseUp={handleMouseUpPassword}
+                  edge="end"
+                >
+                  {showPassword ? <VisibilityOff /> : <Visibility />}
+                </IconButton>
+              </InputAdornment>
+            }
+            label="Password"
+            margin="dense"
+          />
+        </FormControl>
+
+  
+
+    <FormControl sx={{ m: 1,  }} variant="outlined" fullWidth margin="dense">
+                  <InputLabel>Department</InputLabel>
                   <Select
-                  fullWidth margin="dense"
                     value={(currentEntity as User)?.department_id || ''}
                     onChange={(e) => setCurrentEntity({
                       ...currentEntity,
@@ -205,6 +306,7 @@ const App = () => {
                 </FormControl>
               </>
             ) : (
+              <>
               <TextField
                 autoFocus
                 margin="dense"
@@ -215,19 +317,36 @@ const App = () => {
                   ...currentEntity,
                   name: e.target.value
                 } as Department)}
-              />
+                />
+
+          <FormControl fullWidth margin="dense">
+                  <InputLabel shrink >Manager</InputLabel>
+                  <Select
+                    value={(currentEntity as Department)?.manager_id || ''}
+                    onChange={(e) => setCurrentEntity({
+                      ...currentEntity,
+                      manager_id: Number(e.target.value)
+                    } as Department)}
+                  >
+                    {users.map((user) => (
+                      <MenuItem key={user.id} value={user.id}>
+                        {user.name}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+            </>
             )}
-            <DialogActions className='bg-gray'>
-              <CustomButton onClick={() => setOpenDialog(false)} variant='contained'  color='error' startIcon={<Cancel />}>Cancel</CustomButton>
-              <CustomButton type="submit" variant="contained" startIcon={currentEntity?.id ? <Save /> : <Add />}>
-                {currentEntity?.id ? 'Update' : 'Create'}
+
+            </DialogContent>
+        <DialogActions className='bg-gray'>
+              <CustomButton size='small' onClick={() => setOpenDialog(false)} variant='contained'  color='error' startIcon={<Cancel />}>Cancel</CustomButton>
+              <CustomButton size='small' type="submit" variant="contained" startIcon={currentEntity?.id ? <Save /> : <Add />}>
+                {currentEntity?.id ? 'Update' : 'Save'}
               </CustomButton>
             </DialogActions>
           </form>
-        </DialogContent>
       </Dialog>
     </CustomCenterDiv>
   );
 };
-
-export default App;

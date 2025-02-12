@@ -2,6 +2,7 @@
 export interface Department {
   id?: number;
   name: string;
+  manager_id: number;
 }
 
 export interface User {
@@ -9,4 +10,18 @@ export interface User {
   name: string;
   email: string;
   department_id: number;
+  password: string;
+}
+
+export interface Author {
+  id?: number;
+  name: string;
+}
+
+export interface Post {
+  id?: number;
+  title: string;
+  content: string;
+  author_id: number;
+  created_at: Date;
 }

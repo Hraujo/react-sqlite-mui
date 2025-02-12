@@ -1,7 +1,9 @@
 // App.tsx
 import React, { useState, useEffect } from 'react';
-import { Button, Container, Dialog, DialogTitle, DialogContent, DialogActions, TextField, Select, MenuItem, InputLabel, FormControl, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Tabs, Tab } from '@mui/material';
+import { Button, Container, Dialog, DialogTitle, DialogContent, DialogActions, TextField, Select, MenuItem, InputLabel, FormControl, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Tabs, Tab, CardContent, Card } from '@mui/material';
 import { Edit, Delete, Add } from '@mui/icons-material';
+import { CustomButton } from './components/custom/CustomButton';
+import { User, Department } from './types';
 
 type Entity = User | Department;
 type EntityType = 'user' | 'department';
@@ -60,7 +62,7 @@ const App = () => {
         <Tab label="Departments" />
       </Tabs>
 
-      <Button 
+      <CustomButton 
         variant="contained" 
         startIcon={<Add />} 
         onClick={() => {
@@ -70,10 +72,17 @@ const App = () => {
         }}
       >
         Add {tabValue === 0 ? 'User' : 'Department'}
-      </Button>
+      </CustomButton>
+
+     <Card>
+      <CardContent>EEE</CardContent>
+     </Card>
+     <Card>
+      <CardContent>EFFFEE</CardContent>
+     </Card>
 
       <TableContainer component={Paper} sx={{ mt: 2 }}>
-        <Table>
+      <Table sx={{ minWidth: 650 }} size="small" aria-label="a dense table">
           <TableHead>
             <TableRow>
               {tabValue === 0 ? (

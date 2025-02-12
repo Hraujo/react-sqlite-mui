@@ -21,6 +21,7 @@ import MailIcon from '@mui/icons-material/Mail';
 import HomeIcon from '@mui/icons-material/Home';
 import PersonIcon from '@mui/icons-material/Person';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+import Article from '@mui/icons-material/Article';
 
 const drawerWidth = 240;
 
@@ -50,6 +51,12 @@ const navLinks = [
     path: "/profile",
     icon: <AccountCircleIcon />,
   },
+  {
+    id: "5",
+    title: "Posts",
+    path: "/posts",
+    icon: <Article />,
+  }
 ];
 
 
@@ -151,9 +158,6 @@ export function Navbar() {
   <Link href="/">
   <MenuItem sx={{ color: '#fff'}}>Hsoft Systems</MenuItem>
   </Link>
-  
-  <MenuItem>Item 2</MenuItem>
-  <MenuItem>Item 3</MenuItem>
 </Stack>
 
           </Typography>

@@ -1,6 +1,7 @@
 // App.tsx
 import React, { useState, useEffect } from 'react';
-import { Dialog, DialogTitle, DialogContent, DialogActions, TextField, Select, MenuItem, InputLabel, FormControl, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Tabs, Tab, CardContent, Card, CardHeader, CardActions, Box, AppBar, IconButton, Chip, InputAdornment, OutlinedInput, Tooltip } from '@mui/material';
+import { Dialog, DialogTitle, DialogContent, DialogActions, TextField, Select, MenuItem, InputLabel, FormControl, Table, TableBody, TableCell, 
+  TableContainer, TableHead, TableRow, Paper, Tabs, Tab, CardContent, Card, CardHeader, CardActions, Box, AppBar, IconButton, Chip, Tooltip } from '@mui/material';
 import { Edit, Delete, Add, Save, Cancel, Visibility } from '@mui/icons-material';
 import { CustomButton } from '../../components/custom/CustomButton';
 import { CustomCenterDiv } from '../../components/custom/CustomCenterDiv';
@@ -22,8 +23,8 @@ export const PostList: React.FC<DataTableProps> = ({ entity }) => {
   const [currentEntity, setCurrentEntity] = useState<Entity | null>(null);
   const [entityType, setEntityType] = useState<EntityType>('author');
   const [tabValue, setTabValue] = useState(0);
-const [viewPostDialogOpen, setViewPostDialogOpen] = useState(false);
-const [selectedPost, setSelectedPost] = useState<Post | null>(null);
+  const [viewPostDialogOpen, setViewPostDialogOpen] = useState(false);
+  const [selectedPost, setSelectedPost] = useState<Post | null>(null);
 
 
   useEffect(() => {
@@ -55,7 +56,7 @@ const [selectedPost, setSelectedPost] = useState<Post | null>(null);
     e.preventDefault();
     const url = `http://localhost:3001/${entityType}s${currentEntity?.id ? `/${currentEntity.id}` : ''}`;
     const method = currentEntity?.id ? 'PUT' : 'POST';
-  
+
     const payload = entityType === 'post' ? {
       title: (currentEntity as Post)?.title,
       content: (currentEntity as Post)?.content,
@@ -63,7 +64,7 @@ const [selectedPost, setSelectedPost] = useState<Post | null>(null);
     } : {
       name: (currentEntity as Author)?.name,
     };
-  
+
     const response = await fetch(url, {
       method,
       headers: {
@@ -71,7 +72,7 @@ const [selectedPost, setSelectedPost] = useState<Post | null>(null);
       },
       body: JSON.stringify(payload),
     });
-  
+
     if (response.ok) {
       setOpenDialog(false);
       fetchData();
@@ -87,22 +88,22 @@ const [selectedPost, setSelectedPost] = useState<Post | null>(null);
     fetchData();
   };
 
-const handleAddNew = () => {
-  if (tabValue === 0) {
-    setCurrentEntity({
-      name: '',
-    } as Author);
-  } else {
-    setCurrentEntity({
-      title: '',
-      content: '',
-      author_id: authors[0]?.id,
-      created_at: new Date(),
-    } as Post);
-  }
-  setEntityType(tabValue === 0 ? 'author' : 'post');
-  setOpenDialog(true);
-};
+  const handleAddNew = () => {
+    if (tabValue === 0) {
+      setCurrentEntity({
+        name: '',
+      } as Author);
+    } else {
+      setCurrentEntity({
+        title: '',
+        content: '',
+        author_id: authors[0]?.id,
+        created_at: new Date(),
+      } as Post);
+    }
+    setEntityType(tabValue === 0 ? 'author' : 'post');
+    setOpenDialog(true);
+  };
 
 
 
@@ -190,17 +191,17 @@ const handleAddNew = () => {
                         </IconButton>
                       </Tooltip>
                       <Tooltip title="View Post">
-  <IconButton
-    color="primary"
-    size="small"
-    onClick={() => {
-      setSelectedPost(entity as Post);
-      setViewPostDialogOpen(true);
-    }}
-  >
-    <Visibility />
-  </IconButton>
-</Tooltip>
+                        <IconButton
+                          color="primary"
+                          size="small"
+                          onClick={() => {
+                            setSelectedPost(entity as Post);
+                            setViewPostDialogOpen(true);
+                          }}
+                        >
+                          <Visibility />
+                        </IconButton>
+                      </Tooltip>
 
                     </TableCell>
                   </TableRow>
@@ -260,6 +261,7 @@ const handleAddNew = () => {
                 />
 
                 <TextField
+           
                   autoFocus
                   margin="dense"
                   label=" Content"
@@ -302,47 +304,48 @@ const handleAddNew = () => {
       </Dialog>
 
       <Dialog open={viewPostDialogOpen} onClose={() => setViewPostDialogOpen(false)} maxWidth="md" fullWidth>
-  <DialogTitle className='bg-gray'>Post Details</DialogTitle>
-  <DialogContent>
-    <Box sx={{ mt: 2 }}>
-      <TextField
-        label="Title"
-        fullWidth
-        value={selectedPost?.title || ''}
-        margin="dense"
-        InputProps={{ readOnly: true }}
-      />
-      <TextField
-        label="Content"
-        fullWidth
-        value={selectedPost?.content || ''}
-        margin="dense"
-        multiline
-        rows={4}
-        InputProps={{ readOnly: true }}
-      />
-      <TextField
-        label="Author"
-        fullWidth
-        value={authors.find(a => a.id === selectedPost?.author_id)?.name || 'N/A'}
-        margin="dense"
-        InputProps={{ readOnly: true }}
-      />
-      <TextField
-        label="Posted At"
-        fullWidth
-        value={selectedPost?.created_at ? new Date(selectedPost.created_at).toLocaleString() : 'N/A'}
-        margin="dense"
-        InputProps={{ readOnly: true }}
-      />
-    </Box>
-  </DialogContent>
-  <DialogActions className='bg-gray'>
-    <CustomButton onClick={() => setViewPostDialogOpen(false)} variant="contained" color="error">
-      Close
-    </CustomButton>
-  </DialogActions>
-</Dialog>
+        <DialogTitle className='bg-gray'>Post Details</DialogTitle>
+        <DialogContent>
+          <Box sx={{ mt: 2 }}>
+            <TextField
+              label="Title"
+              fullWidth
+              value={selectedPost?.title || ''}
+              margin="dense"
+              InputProps={{ readOnly: true }}
+            />
+            <TextField
+                 multiline
+                 maxRows={24}
+              label="Content"
+              fullWidth
+              value={selectedPost?.content || ''}
+              margin="dense"
+        
+              // InputProps={{ readOnly: true }}
+            />
+            <TextField
+              label="Author"
+              fullWidth
+              value={authors.find(a => a.id === selectedPost?.author_id)?.name || 'N/A'}
+              margin="dense"
+              InputProps={{ readOnly: true }}
+            />
+            <TextField
+              label="Posted At"
+              fullWidth
+              value={selectedPost?.created_at ? new Date(selectedPost.created_at).toLocaleString() : 'N/A'}
+              margin="dense"
+              InputProps={{ readOnly: true }}
+            />
+          </Box>
+        </DialogContent>
+        <DialogActions className='bg-gray'>
+          <CustomButton onClick={() => setViewPostDialogOpen(false)} variant="contained" color="error">
+            Close
+          </CustomButton>
+        </DialogActions>
+      </Dialog>
     </CustomCenterDiv>
   );
 };

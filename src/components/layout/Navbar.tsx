@@ -56,6 +56,18 @@ const navLinks = [
     title: "Posts",
     path: "/posts",
     icon: <Article />,
+  },
+  {
+    id: "6",
+    title: "Posts 3",
+    path: "/post3",
+    icon: <Article />,
+  },
+  {
+    id: "7",
+    title: "Posts 2",
+    path: "/post2",
+    icon: <Article />,
   }
 ];
 

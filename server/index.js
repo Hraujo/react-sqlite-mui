@@ -19,8 +19,12 @@ app.get('/authors', (req, res) => {
   res.json(authors);
 });
 
+
 app.post('/authors', (req, res) => {
-  const result = db.prepare('INSERT INTO authors (name) VALUES (?)').run(req.body.name);
+  const result = db.prepare(`
+    INSERT INTO authors (name) 
+    VALUES (?)
+  `).run(req.body.name);
   res.json({ id: result.lastInsertRowid });
 });
 

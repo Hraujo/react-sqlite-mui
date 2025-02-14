@@ -33,7 +33,7 @@ db.exec(`
   content TEXT,
   author_id INTEGER,
   created_at date TIMESTAMP DEFAULT (datetime('now','localtime')),
-  FOREIGN KEY(author_id) REFERENCES users(id)
+  FOREIGN KEY(author_id) REFERENCES authors(id)
   );
 
   CREATE TABLE if not exists authors (

@@ -149,7 +149,7 @@ export const PostList: React.FC<UserListProps> = ({ entity }) => {
           <TableContainer component={Paper} sx={{ mt: 2 }}>
             <Table sx={{ minWidth: 650 }} size="small" aria-label="a dense table">
               <TableHead>
-                <TableRow className='bg-lightGray'>
+                <TableRow className='bg-lightGray' sx={{ color: 'red' }}>
                   {tabValue === 0 ? (
                     <>
                       <TableCell>Name</TableCell>
@@ -176,7 +176,7 @@ export const PostList: React.FC<UserListProps> = ({ entity }) => {
                   ? entities.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                   : entities
                 ).map((entity) => (
-                  <TableRow key={entity.id}>
+                  <TableRow key={entity.id} sx={{ color: 'red' }}>
                     {tabValue === 0 ? (
                       <>
                         <TableCell>{(entity as Author).name}</TableCell>
@@ -302,7 +302,7 @@ export const PostList: React.FC<UserListProps> = ({ entity }) => {
       </Card>
 
       {/* Author Posts Dialog */}
-      <Dialog open={authorPostsDialogOpen} onClose={() => setAuthorPostsDialogOpen(false)} maxWidth="md" fullWidth>
+      <Dialog open={authorPostsDialogOpen} onClose={() => setAuthorPostsDialogOpen(false)} maxWidth="md"  fullWidth mt={4} sx={{ maxHeight:'85%', marginTop: '110px' }}>
         <DialogTitle className='bg-gray'>Posts by {selectedAuthor?.name}</DialogTitle>
         <DialogContent>
           <List>
@@ -312,8 +312,9 @@ export const PostList: React.FC<UserListProps> = ({ entity }) => {
                   primary={post.title}
                   secondary={post.content}
                   sx={{
+                    marginBottom: '2px',
                     '& .MuiListItemText-primary': {
-                      backgroundColor: '#f0f0f0', // Change to your desired color
+                      backgroundColor: '#31CCCA', // Change to your desired color
                       padding: '5px',
                       borderRadius: '4px',
                       textTransform: 'uppercase',
@@ -324,6 +325,7 @@ export const PostList: React.FC<UserListProps> = ({ entity }) => {
                       padding: '5px',
                       borderRadius: '4px',
                       textAlign: "justify",
+                      border: '1px solid #31CCCA',
                     },
                   }}
                 />
